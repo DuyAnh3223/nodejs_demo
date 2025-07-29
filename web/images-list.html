@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Images & Media - APN Project CRRP2024-01MY-Le</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="images/logo/project_logo.png" alt="Project Logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="team.html">Team</a></li>
+                    <li><a href="outcomes.html">Outcomes</a></li>
+                    <li><a href="events.html">Events</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Images & Media</h2>
+                <p>Browse all project photos, galleries and media content</p>
+            </div>
+
+            <!-- Filter and Search Section -->
+            <div class="filter-section">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search images...">
+                    <button type="button" id="search-btn">Search</button>
+                </div>
+                <div class="sort-options">
+                    <select id="sort-select">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="title-asc">Title A-Z</option>
+                        <option value="title-desc">Title Z-A</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Images Grid -->
+            <div class="articles-container">
+                <div class="article-grid" id="images-grid">
+                    <!-- Images will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    <span id="pagination-info">Showing 1-9 of 0 images</span>
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" id="prev-btn" disabled>Previous</button>
+                    <div class="pagination-numbers" id="pagination-numbers">
+                        <!-- Page numbers will be generated here -->
+                    </div>
+                    <button class="pagination-btn" id="next-btn" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Back to Outcomes Button -->
+            <div class="back-to-outcomes">
+                <a href="outcomes.html" class="back-btn">← Back to Outcomes</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2024 APN Project CRRP2024-01MY-Le. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/images-list.js"></script>
+</body>
+</html> 
