@@ -1,51 +1,87 @@
-// Main JavaScript for APN Project Website
+// Main JavaScript for the website
 
+// Mobile Navigation
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // View More functionality for Events page
-    initializeViewMore();
-    
-    // Initialize other features
+    initializeMobileNavigation();
     initializeAnimations();
     initializeNavigation();
+    initializeViewMore();
 });
 
-// View More functionality
-function initializeViewMore() {
-    const viewMoreButtons = document.querySelectorAll('.view-more-btn');
+// Initialize mobile navigation
+function initializeMobileNavigation() {
+    const mobileToggle = document.getElementById('mobile-menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    const body = document.body;
     
-    viewMoreButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const category = this.getAttribute('data-category');
-            const hiddenArticles = document.getElementById(`${category}-hidden`);
-            const buttonText = this.textContent;
-            
-            if (hiddenArticles) {
-                if (hiddenArticles.classList.contains('show')) {
-                    // Hide articles
-                    hiddenArticles.classList.remove('show');
-                    this.textContent = buttonText.replace('Show Less', 'View More ' + category.charAt(0).toUpperCase() + category.slice(1));
-                    this.classList.remove('expanded');
-                } else {
-                    // Show articles
-                    hiddenArticles.classList.add('show');
-                    this.textContent = buttonText.replace('View More', 'Show Less');
-                    this.classList.add('expanded');
-                    
-                    // Add loading animation
-                    this.classList.add('loading');
-                    setTimeout(() => {
-                        this.classList.remove('loading');
-                    }, 500);
-                }
-            }
+    if (!mobileToggle || !navMenu) return;
+    
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'nav-overlay';
+    body.appendChild(overlay);
+    
+    // Toggle menu
+    mobileToggle.addEventListener('click', function() {
+        const isActive = navMenu.classList.contains('active');
+        
+        if (isActive) {
+            // Close menu
+            navMenu.classList.remove('active');
+            mobileToggle.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
+        } else {
+            // Open menu
+            navMenu.classList.add('active');
+            mobileToggle.classList.add('active');
+            overlay.classList.add('active');
+            body.style.overflow = 'hidden';
+        }
+    });
+    
+    // Close menu when clicking overlay
+    overlay.addEventListener('click', function() {
+        navMenu.classList.remove('active');
+        mobileToggle.classList.remove('active');
+        overlay.classList.remove('active');
+        body.style.overflow = '';
+    });
+    
+    // Close menu when clicking on a link
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navMenu.classList.remove('active');
+            mobileToggle.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
         });
+    });
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+            navMenu.classList.remove('active');
+            mobileToggle.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 900) {
+            navMenu.classList.remove('active');
+            mobileToggle.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
+        }
     });
 }
 
 // Initialize animations
 function initializeAnimations() {
-    // Intersection Observer for fade-in animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -60,9 +96,9 @@ function initializeAnimations() {
         });
     }, observerOptions);
     
-    // Observe all animated elements
-    const animatedElements = document.querySelectorAll('.content-block, .article-item, .team-card');
-    animatedElements.forEach(el => {
+    // Observe elements for animation
+    const animateElements = document.querySelectorAll('.key-figure-item, .collaborator, .content-block, .event-item, .news-article');
+    animateElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
         el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
@@ -73,60 +109,90 @@ function initializeAnimations() {
 // Initialize navigation
 function initializeNavigation() {
     // Smooth scrolling for anchor links
-    const anchorLinks = document.querySelectorAll('a[href^="#"]');
-    anchorLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
-            
-            if (targetElement) {
-                const headerHeight = document.querySelector('.main-header').offsetHeight;
-                const targetPosition = targetElement.offsetTop - headerHeight - 20;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
             }
         });
     });
     
-    // Active navigation highlighting
+    // Active link highlighting
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    const navLinks = document.querySelectorAll('.main-nav a');
+    const navLinks = document.querySelectorAll('.nav-menu a');
     
     navLinks.forEach(link => {
-        const linkHref = link.getAttribute('href');
-        if (linkHref === currentPage) {
+        const linkPage = link.getAttribute('href');
+        if (linkPage === currentPage) {
             link.classList.add('active');
         }
     });
 }
 
-// WordPress Integration Helper Functions
-// These functions can be used when converting to WordPress
+// View More functionality for Outcomes page 
+function initializeViewMore() {
+    const viewMoreBtns = document.querySelectorAll('.view-more-btn');
 
-// Function to create article HTML dynamically
-function createArticleHTML(articleData) {
-    const { title, date, description, image, link, category } = articleData;
-    
+    viewMoreBtns.forEach(btn => {
+        // Only handle buttons without href (for toggle functionality)
+        if (!btn.hasAttribute('href') || btn.getAttribute('href') === '#') {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const container = this.closest('.content-block');
+                const hiddenArticles = container.querySelector('.hidden-articles');
+
+                if (hiddenArticles) {
+                    // Toggle visibility using style.display
+                    if (hiddenArticles.style.display === 'none' || hiddenArticles.style.display === '') {
+                        hiddenArticles.style.display = 'block';
+                        this.textContent = 'Show Less';
+                    } else {
+                        hiddenArticles.style.display = 'none';
+                        this.textContent = 'View More';
+                    }
+                }
+            });
+
+            // Ensure initial state is correct
+            const container = btn.closest('.content-block');
+            const hiddenArticles = container ? container.querySelector('.hidden-articles') : null;
+            if (hiddenArticles) {
+                hiddenArticles.style.display = 'none';
+                btn.textContent = 'View More';
+            }
+        }
+        // If button has href, let it work as a normal link (no JavaScript interference)
+    });
+}
+
+
+// WordPress Integration Helper Functions
+// These functions would be useful when migrating to WordPress
+
+// Create article HTML for dynamic content
+function createArticleHTML(article) {
     return `
-        <article class="article-item" data-date="${date}" data-category="${category}">
+        <article class="article-item">
             <div class="article-image">
-                <img src="${image}" alt="${title}">
+                <img src="${article.image}" alt="${article.title}">
             </div>
             <div class="article-content">
-                <h4>${title}</h4>
-                <p class="article-date">${formatDate(date)}</p>
-                <p>${description}</p>
-                <a href="${link}" class="read-more">${getReadMoreText(category)}</a>
+                <h4>${article.title}</h4>
+                <div class="article-date">${formatDate(article.date)}</div>
+                <p>${article.excerpt}</p>
+                <a href="${article.link}" class="read-more">${getReadMoreText(article.type)}</a>
             </div>
         </article>
     `;
 }
 
-// Function to format date
+// Format date for display
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -136,67 +202,42 @@ function formatDate(dateString) {
     });
 }
 
-// Function to get appropriate read more text based on category
-function getReadMoreText(category) {
+// Get appropriate "Read More" text based on content type
+function getReadMoreText(type) {
     const textMap = {
-        'reports': 'Read Full Report',
-        'publications': 'View Publication',
-        'pictures': 'View Gallery'
+        'report': 'Read Report',
+        'publication': 'Read Publication',
+        'image': 'View Gallery',
+        'default': 'Read More'
     };
-    return textMap[category] || 'Read More';
+    return textMap[type] || textMap.default;
 }
 
-// Function to sort articles by date (newest first)
-function sortArticlesByDate(articles) {
-    return articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+// Sort articles by date
+function sortArticlesByDate(articles, ascending = false) {
+    return articles.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return ascending ? dateA - dateB : dateB - dateA;
+    });
 }
 
-// Function to limit articles to 3 per category
-function limitArticles(articles, limit = 3) {
+// Limit articles to specified number
+function limitArticles(articles, limit) {
     return articles.slice(0, limit);
 }
 
-// Function to populate articles dynamically
-function populateArticles(category, articles) {
-    const grid = document.getElementById(`${category}-grid`);
-    const hiddenContainer = document.getElementById(`${category}-hidden`);
+// Populate articles in a container
+function populateArticles(container, articles, limit = null) {
+    const limitedArticles = limit ? limitArticles(articles, limit) : articles;
     
-    if (!grid) return;
-    
-    // Clear existing content
-    grid.innerHTML = '';
-    if (hiddenContainer) {
-        hiddenContainer.innerHTML = '';
-    }
-    
-    // Sort articles by date
-    const sortedArticles = sortArticlesByDate(articles);
-    
-    // Split into visible and hidden
-    const visibleArticles = limitArticles(sortedArticles, 3);
-    const hiddenArticles = sortedArticles.slice(3);
-    
-    // Add visible articles
-    visibleArticles.forEach(article => {
-        grid.insertAdjacentHTML('beforeend', createArticleHTML(article));
-    });
-    
-    // Add hidden articles if any
-    if (hiddenArticles.length > 0 && hiddenContainer) {
-        hiddenArticles.forEach(article => {
-            hiddenContainer.insertAdjacentHTML('beforeend', createArticleHTML(article));
-        });
-    }
+    container.innerHTML = limitedArticles.map(article => 
+        createArticleHTML(article)
+    ).join('');
 }
 
-// Export functions for WordPress integration
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        createArticleHTML,
-        formatDate,
-        getReadMoreText,
-        sortArticlesByDate,
-        limitArticles,
-        populateArticles
-    };
+// Initialize view more if on events page
+if (document.querySelector('.view-more-btn')) {
+    initializeViewMore();
 } 
+
