@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
@@ -22,10 +23,16 @@ app.use(morgan('tiny'));
 
 //init db
 require('./dbs/init.mongodb')
-const { checkOverload } = require('./helpers/check.connect');
-checkOverload(); // Kiểm tra quá tải kết nối MongoDB
-//init routes
 
+//init routes
+app.get('/', (req, res, next) => {
+    //const strCompress ="Hello World";
+    return res.status(200).json({
+        message: 'Welcome to WsV eCommerce API',
+        //strCompress: strCompress,
+        //strCompressLength: strCompress.length
+    });
+})
 // handle errors
 
 module.exports = app;
